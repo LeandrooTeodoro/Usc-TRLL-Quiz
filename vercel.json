@@ -1,11 +1,9 @@
 {
   "version": 2,
   "builds": [
-    { "src": "public/**", "use": "@vercel/static" },
-    { "src": "api/detect_epi.py", "use": "@vercel/python" }
+    { "src": "public/**", "use": "@vercel/static" }
   ],
   "routes": [
-    { "src": "/api/detect-epi", "dest": "/api/detect_epi.py" },
     { "src": "/(.*)", "dest": "/public/$1" }
   ]
 }

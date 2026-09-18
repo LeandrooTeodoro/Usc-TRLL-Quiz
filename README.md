@@ -22,7 +22,7 @@ Os três documentos-fonte usados neste projeto estão em `docs/`:
 | Exportação em PDF (por empresa e/ou por data) | ✅ Funcional, 100% offline (jsPDF local) | `public/js/app.js`, `public/js/vendor/jspdf.umd.min.js` |
 | Fila de sincronização offline → Supabase | ✅ Implementada (precisa de credenciais reais) | `public/js/supabase-client.js` |
 | Schema Supabase (tabelas + RLS liberada via anon key) | ✅ Pronto para aplicar | `supabase/schema.sql` |
-| Módulo de visão computacional (pessoa em zona de risco sob carga suspensa) | ✅ Funcional com YOLOv8 pré-treinado | `api/detect_epi.py` |
+| Módulo de visão computacional (pessoa em zona de risco sob carga suspensa) | ✅ Funcional localmente com YOLOv8 pré-treinado; ⚠️ não publicado na Vercel (ver nota abaixo) | `api/detect_epi.py` |
 | Detecção de uso de capacete (EPI) | ⚠️ Requer modelo customizado — ver nota abaixo | `api/detect_epi.py` |
 
 ## Conteúdo do quiz
@@ -119,6 +119,15 @@ Este módulo depende de conexão (inferência roda no backend), diferente do
 quiz — está alinhado com a resposta da TRLL de que o **quiz** é o item que
 precisa ser offline; o módulo de imagem é usado pelo gestor, tipicamente com
 conexão disponível.
+
+**Deploy:** `ultralytics` traz `torch`/`torchvision` como dependência, o que
+passa muito do limite de tamanho de função serverless da Vercel (pacote final
+> 5 GB contra um máximo de 500 MB) — por isso `vercel.json` hoje só publica
+`public/` (o quiz), e `api/detect_epi.py` não fica ativo nesse deploy. Para
+publicar esse módulo, ele precisa de um host que aceite esse peso (ex.: uma
+VM/container próprio, Render, Railway, Hugging Face Spaces) ou trocar
+`ultralytics` por um runtime mais leve (ex.: ONNX Runtime com o modelo
+exportado para `.onnx`, sem depender do `torch` completo).
 
 ## Identidade visual
 
