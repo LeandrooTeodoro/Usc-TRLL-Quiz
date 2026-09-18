@@ -1,0 +1,186 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#0a2e4d" />
+  <title>Segurança em Içamento — Quiz TRLL</title>
+  <link rel="manifest" href="manifest.json" />
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+  <div id="app">
+
+    <header class="app-header">
+      <div class="brand-mark">TRLL</div>
+      <div class="brand-text">
+        <h1>Segurança em Içamento</h1>
+        <p>Quiz TRLL &middot; NR 11</p>
+      </div>
+      <span class="status-pill" id="connStatus">verificando...</span>
+    </header>
+
+    <!-- ============ LOGIN ============ -->
+    <section class="view active" id="view-login">
+      <h2 class="view-title">Entrar</h2>
+      <p class="view-subtitle">Use o cadastro feito no primeiro acesso deste aparelho. Funciona sem internet.</p>
+
+      <div id="loginKnownProfile" style="display:none;">
+        <div class="menu-card" id="btnContinueAsProfile">
+          <h3 id="knownProfileName">—</h3>
+          <p id="knownProfileRole">—</p>
+        </div>
+        <button class="btn btn-ghost" id="btnSwitchProfile">Não é você? Cadastrar outro usuário neste aparelho</button>
+      </div>
+
+      <div id="loginNoProfile">
+        <button class="btn btn-primary" id="btnGoCadastro">Primeiro acesso — Cadastrar</button>
+      </div>
+    </section>
+
+    <!-- ============ CADASTRO ============ -->
+    <section class="view" id="view-cadastro">
+      <h2 class="view-title">Cadastro — Primeiro Acesso</h2>
+      <p class="view-subtitle">Preenchido uma única vez neste aparelho. Os dados ficam salvos no celular mesmo sem internet.</p>
+
+      <div class="field">
+        <label for="inpNome">Nome completo</label>
+        <input type="text" id="inpNome" placeholder="Ex.: João da Silva" />
+      </div>
+
+      <div class="field">
+        <label for="inpCargo">Cargo / Função</label>
+        <input type="text" id="inpCargo" placeholder="Ex.: Sinaleiro, Operador de guindaste, Ajudante" />
+      </div>
+
+      <div class="field">
+        <label for="inpEmpresaSetor">Empresa / Setor</label>
+        <input type="text" id="inpEmpresaSetor" placeholder="Ex.: Empresa Contratante X / Obra Y" />
+      </div>
+
+      <div class="field">
+        <label>Tipo de acesso</label>
+        <div class="radio-row">
+          <div class="radio-card selected" data-role="colaborador">Colaborador</div>
+          <div class="radio-card" data-role="gestor">Gestor (TRLL)</div>
+        </div>
+      </div>
+
+      <div class="field" id="gestorCodeField" style="display:none;">
+        <label for="inpGestorCode">Código de acesso do gestor</label>
+        <input type="text" id="inpGestorCode" placeholder="Fornecido pela TRLL" />
+      </div>
+
+      <button class="btn btn-primary" id="btnSalvarCadastro">Salvar e continuar</button>
+    </section>
+
+    <!-- ============ MENU ============ -->
+    <section class="view" id="view-menu">
+      <h2 class="view-title" id="menuGreeting">Olá!</h2>
+      <p class="view-subtitle">Escolha uma opção abaixo.</p>
+
+      <div class="menu-card" id="cardIniciarQuiz">
+        <h3>Iniciar Quiz de Segurança (NR 11)</h3>
+        <p>22 situações práticas de içamento e movimentação de carga. Leva de 8 a 12 minutos.</p>
+      </div>
+
+      <div class="menu-card" id="cardHistorico">
+        <h3>Meu histórico</h3>
+        <p>Veja suas tentativas anteriores registradas neste aparelho.</p>
+      </div>
+
+      <div class="menu-card" id="cardGestor" style="display:none;">
+        <h3>Painel do Gestor</h3>
+        <p>Acompanhe quem já respondeu, notas e exporte os resultados.</p>
+      </div>
+
+      <button class="btn btn-ghost" id="btnLogout">Sair / Trocar usuário</button>
+    </section>
+
+    <!-- ============ QUIZ ============ -->
+    <section class="view" id="view-quiz">
+      <div class="progress-bar"><div id="quizProgressBar" style="width:0%"></div></div>
+      <span class="category-tag" id="quizCategoryTag">—</span>
+
+      <div class="question-card">
+        <div class="question-text" id="quizQuestionTitle">—</div>
+        <p class="scenario" id="quizScenario">—</p>
+        <p class="question-text" id="quizQuestionText" style="font-weight:600;font-size:14px;">—</p>
+
+        <div id="quizOptionsContainer"><!-- opções injetadas via JS --></div>
+
+        <div id="quizNumericContainer" style="display:none;">
+          <div class="field">
+            <label for="inpNumericAnswer">Sua resposta</label>
+            <input type="number" id="inpNumericAnswer" step="any" placeholder="Digite o valor" />
+          </div>
+        </div>
+
+        <div class="feedback-box" id="quizFeedback"></div>
+      </div>
+
+      <button class="btn btn-primary" id="btnQuizConfirm">Confirmar resposta</button>
+      <button class="btn btn-secondary" id="btnQuizNext" style="display:none;">Próxima pergunta</button>
+    </section>
+
+    <!-- ============ RESULTADO ============ -->
+    <section class="view" id="view-resultado">
+      <h2 class="view-title">Resultado</h2>
+      <div class="score-circle" id="scoreCircle">
+        <span class="num" id="scoreNum">0/0</span>
+        <span class="den" id="scoreLabel">acertos</span>
+      </div>
+      <p class="view-subtitle" id="resultMessage" style="text-align:center;">—</p>
+
+      <div class="result-list" id="resultList"></div>
+
+      <button class="btn btn-primary" id="btnVoltarMenuFromResult">Voltar ao menu</button>
+    </section>
+
+    <!-- ============ HISTÓRICO ============ -->
+    <section class="view" id="view-historico">
+      <h2 class="view-title">Meu histórico</h2>
+      <div class="result-list" id="historicoList"></div>
+      <button class="btn btn-ghost" id="btnVoltarMenuFromHistorico">&larr; Voltar</button>
+    </section>
+
+    <!-- ============ PAINEL GESTOR ============ -->
+    <section class="view" id="view-gestor">
+      <h2 class="view-title">Painel do Gestor</h2>
+      <p class="view-subtitle">Colaboradores agrupados por empresa. Se alguém refizer o quiz, a nota exibida é sempre a da tentativa mais recente.</p>
+
+      <div class="sync-banner" id="syncBanner" style="display:none;"></div>
+
+      <div class="field">
+        <label for="gestorFilterEmpresa">Empresa</label>
+        <select id="gestorFilterEmpresa"></select>
+      </div>
+
+      <div class="field">
+        <label for="gestorFilterData">Data (deixe em branco para ver/exportar todas as datas)</label>
+        <input type="date" id="gestorFilterData" />
+      </div>
+
+      <button class="btn btn-ghost" id="btnClearFilters" style="margin-top:-10px;">Limpar filtro de data</button>
+
+      <div class="stat-grid">
+        <div class="stat-card"><div class="value" id="statTotal">0</div><div class="label">Colaboradores (filtro atual)</div></div>
+        <div class="stat-card"><div class="value" id="statMedia">0%</div><div class="label">Média geral</div></div>
+      </div>
+
+      <div id="gestorGroupsContainer"><!-- seções por empresa injetadas via JS --></div>
+
+      <button class="btn btn-secondary" id="btnExportPDF">Exportar resultados (PDF)</button>
+      <button class="btn btn-ghost" id="btnVoltarMenuFromGestor">&larr; Voltar</button>
+    </section>
+
+    <p class="footer-note">TRLL Engenharia LTDA &middot; Projeto Bootcamp Extensionista &middot; UNISAGRADO</p>
+  </div>
+
+  <script src="js/vendor/jspdf.umd.min.js"></script>
+  <script src="js/quiz-questions.js"></script>
+  <script src="js/db.js"></script>
+  <script src="js/supabase-client.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>

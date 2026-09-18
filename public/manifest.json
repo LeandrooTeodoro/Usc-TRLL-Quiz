@@ -1,0 +1,15 @@
+{
+  "name": "Segurança em Içamento — Quiz TRLL",
+  "short_name": "Quiz TRLL",
+  "description": "Quiz educativo offline sobre NR11 para operadores, sinaleiros e ajudantes da TRLL Engenharia.",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#f4f7fa",
+  "theme_color": "#0a2e4d",
+  "icons": [
+    { "src": "assets/icon-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "assets/icon-512.png", "sizes": "512x512", "type": "image/png" }
+  ]
+}

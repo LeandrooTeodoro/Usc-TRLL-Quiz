@@ -1,0 +1,13 @@
+# Credenciais reais do Supabase (nunca versionar) — use config.example.js como modelo
+public/config.local.js
+
+# Python
+__pycache__/
+*.pyc
+
+# Sistema
+.DS_Store
+Thumbs.db
+
+# Editor
+.vscode/
