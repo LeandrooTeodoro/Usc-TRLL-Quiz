@@ -1,15 +1,20 @@
 -- ============================================================================
 -- Segurança em Içamento — Quiz TRLL
--- Schema Supabase (PostgreSQL + Supabase Auth + Row Level Security)
+-- Schema Supabase (PostgreSQL + Row Level Security)
 --
--- Modelo de acesso:
---   - "colaborador": só enxerga e grava o próprio perfil e as próprias tentativas.
---   - "gestor": enxerga (somente leitura) o perfil e as tentativas de todos.
+-- O app usa login local (sem senha, ver README "Próximos passos" e
+-- js/app.js#handleCadastro) — não há sessão de Supabase Auth, então não existe
+-- auth.uid() para restringir o dono da linha. As políticas abaixo liberam
+-- leitura/escrita para qualquer requisição autenticada com a anon key (que já
+-- é pública no bundle do cliente, como em qualquer app Supabase). É um
+-- trade-off aceitável para este uso interno (treinamento NR-11, sem dados
+-- sensíveis) — upgrade para Supabase Auth real é o próximo passo documentado
+-- no README caso isso mude.
 -- ============================================================================
 
 -- ---------- Tabela de perfis ----------
 create table if not exists public.profiles (
-  id uuid primary key default auth.uid(),
+  id uuid primary key default gen_random_uuid(),
   full_name text not null,
   cargo text not null,
   empresa_setor text,
@@ -19,28 +24,17 @@ create table if not exists public.profiles (
 
 alter table public.profiles enable row level security;
 
--- Colaborador só vê/edita o próprio perfil
-create policy "profiles_select_own"
-  on public.profiles for select
-  using (auth.uid() = id);
-
-create policy "profiles_upsert_own"
+create policy "profiles_insert_anon"
   on public.profiles for insert
-  with check (auth.uid() = id);
+  with check (true);
 
-create policy "profiles_update_own"
-  on public.profiles for update
-  using (auth.uid() = id);
-
--- Gestor vê todos os perfis (leitura)
-create policy "profiles_select_gestor"
+create policy "profiles_select_anon"
   on public.profiles for select
-  using (
-    exists (
-      select 1 from public.profiles p
-      where p.id = auth.uid() and p.role = 'gestor'
-    )
-  );
+  using (true);
+
+create policy "profiles_update_anon"
+  on public.profiles for update
+  using (true);
 
 -- ---------- Tabela de tentativas de quiz ----------
 create table if not exists public.quiz_attempts (
@@ -57,24 +51,13 @@ create table if not exists public.quiz_attempts (
 
 alter table public.quiz_attempts enable row level security;
 
--- Colaborador grava e lê apenas as próprias tentativas
-create policy "attempts_insert_own"
+create policy "attempts_insert_anon"
   on public.quiz_attempts for insert
-  with check (auth.uid() = profile_id);
+  with check (true);
 
-create policy "attempts_select_own"
+create policy "attempts_select_anon"
   on public.quiz_attempts for select
-  using (auth.uid() = profile_id);
-
--- Gestor lê todas as tentativas (para o painel de acompanhamento)
-create policy "attempts_select_gestor"
-  on public.quiz_attempts for select
-  using (
-    exists (
-      select 1 from public.profiles p
-      where p.id = auth.uid() and p.role = 'gestor'
-    )
-  );
+  using (true);
 
 -- ---------- Índices úteis ----------
 create index if not exists idx_quiz_attempts_profile_id on public.quiz_attempts (profile_id);

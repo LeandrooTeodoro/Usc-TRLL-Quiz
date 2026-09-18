@@ -21,7 +21,7 @@ Os três documentos-fonte usados neste projeto estão em `docs/`:
 | Painel do gestor (agrupado por empresa, filtro por data) | ✅ Funcional | `public/js/app.js` |
 | Exportação em PDF (por empresa e/ou por data) | ✅ Funcional, 100% offline (jsPDF local) | `public/js/app.js`, `public/js/vendor/jspdf.umd.min.js` |
 | Fila de sincronização offline → Supabase | ✅ Implementada (precisa de credenciais reais) | `public/js/supabase-client.js` |
-| Schema Supabase (tabelas + RLS colaborador/gestor) | ✅ Pronto para aplicar | `supabase/schema.sql` |
+| Schema Supabase (tabelas + RLS liberada via anon key) | ✅ Pronto para aplicar | `supabase/schema.sql` |
 | Módulo de visão computacional (pessoa em zona de risco sob carga suspensa) | ✅ Funcional com YOLOv8 pré-treinado | `api/detect_epi.py` |
 | Detecção de uso de capacete (EPI) | ⚠️ Requer modelo customizado — ver nota abaixo | `api/detect_epi.py` |
 
@@ -60,15 +60,26 @@ teste `TRLL-2026` (definido em `public/js/app.js`, função `handleCadastro`
 
 1. Crie um projeto em [supabase.com](https://supabase.com).
 2. Rode `supabase/schema.sql` no SQL Editor do projeto.
-3. Copie `public/config.example.js` para `public/config.local.js` e preencha
-   `SUPABASE_URL` e `SUPABASE_ANON_KEY`.
-4. Inclua `<script src="config.local.js"></script>` em `index.html`, **antes**
-   de `js/supabase-client.js`.
+3. Em **Project Settings → API**, copie a **Project URL** e a **anon public
+   key** e preencha `public/config.js` (`SUPABASE_URL` e `SUPABASE_ANON_KEY`).
+   Esse arquivo já é carregado em `index.html` antes de `js/supabase-client.js`.
+
+A anon key é uma chave pública por design — o acesso real é controlado pelas
+políticas de RLS em `supabase/schema.sql`, então `public/config.js` pode ser
+versionado normalmente (diferente de uma `service_role` key, que nunca deve
+ir para o cliente).
 
 Sem esse passo, o app funciona 100% em modo local (localStorage) — o que já
 atende ao requisito de funcionamento offline em campo. Quando configurado, a
 fila de sincronização (`db.js` + `supabase-client.js`) envia os dados
 pendentes assim que o aparelho volta a ficar online.
+
+**Nota sobre autenticação:** o login do app é local, sem senha (ver
+"Próximos passos"), então não há sessão de Supabase Auth. As políticas de RLS
+liberam leitura/escrita para qualquer requisição com a anon key — aceitável
+para este uso interno (treinamento NR-11, sem dados sensíveis), mas deve
+evoluir para Supabase Auth real antes de qualquer uso com dados mais
+sensíveis.
 
 ## Painel do gestor e relatório em PDF
 

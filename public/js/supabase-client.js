@@ -2,8 +2,8 @@
  * Cliente Supabase minimalista via REST/PostgREST (sem dependência do bundle
  * supabase-js, para manter o app leve e não quebrar o funcionamento offline).
  *
- * Preencha SUPABASE_URL e SUPABASE_ANON_KEY abaixo (ou via config.local.js,
- * carregado antes deste arquivo) com os dados do projeto Supabase real.
+ * Preencha SUPABASE_URL e SUPABASE_ANON_KEY em config.js (carregado antes
+ * deste arquivo) com os dados do projeto Supabase real.
  * Enquanto não configurado, o app funciona inteiramente em modo local
  * (localStorage) — o que já atende ao requisito de uso offline da TRLL.
  */

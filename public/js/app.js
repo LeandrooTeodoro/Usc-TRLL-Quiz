@@ -153,6 +153,18 @@
   // ---------- Cadastro / Login ----------
   const GESTOR_ACCESS_CODE = "TRLL-2026"; // TODO: substituir por autenticação real do Supabase Auth
 
+  // profiles.id é uuid no schema do Supabase (supabase/schema.sql) — usa crypto.randomUUID()
+  // quando disponível (contexto seguro/https) com fallback RFC 4122 v4 para não quebrar a
+  // sincronização em contextos sem essa API.
+  function generateProfileId() {
+    if (window.crypto?.randomUUID) return crypto.randomUUID();
+    return "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g, (c) => {
+      const r = (Math.random() * 16) | 0;
+      const v = c === "x" ? r : (r & 0x3) | 0x8;
+      return v.toString(16);
+    });
+  }
+
   function showCadastroError(msg) {
     const box = $("cadastroError");
     box.textContent = msg;
@@ -179,7 +191,7 @@
     showCadastroError("");
 
     const profile = {
-      id: "local-" + Date.now() + "-" + Math.random().toString(36).slice(2, 8),
+      id: generateProfileId(),
       fullName,
       cargo,
       empresaSetor,
