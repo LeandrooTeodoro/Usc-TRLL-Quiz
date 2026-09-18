@@ -1,9 +1,9 @@
 <!doctype html>
-<html lang="pt-BR">
+<html lang="pt-BR" data-theme="dark">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-  <meta name="theme-color" content="#0a2e4d" />
+  <meta name="theme-color" content="#161826" />
   <title>Segurança em Içamento — Quiz TRLL</title>
   <link rel="manifest" href="manifest.json" />
   <link rel="stylesheet" href="css/style.css" />
@@ -17,35 +17,49 @@
         <h1>Segurança em Içamento</h1>
         <p>Quiz TRLL &middot; NR 11</p>
       </div>
-      <span class="status-pill" id="connStatus">verificando...</span>
+      <div class="header-actions">
+        <span class="status-pill" id="connStatus">verificando...</span>
+        <button class="btn-theme" id="btnTheme" title="Alternar tema claro/escuro" aria-label="Alternar tema claro/escuro">☀</button>
+      </div>
     </header>
 
     <!-- ============ LOGIN ============ -->
     <section class="view active" id="view-login">
+      <div class="kicker">Operação de carga &middot; NR 11</div>
       <h2 class="view-title">Entrar</h2>
       <p class="view-subtitle">Use o cadastro feito no primeiro acesso deste aparelho. Funciona sem internet.</p>
 
       <div id="loginKnownProfile" style="display:none;">
-        <div class="menu-card" id="btnContinueAsProfile">
-          <h3 id="knownProfileName">—</h3>
-          <p id="knownProfileRole">—</p>
+        <div class="profile-card" id="btnContinueAsProfile">
+          <div class="avatar" id="knownProfileAvatar">—</div>
+          <div>
+            <h3 id="knownProfileName">—</h3>
+            <p id="knownProfileRole">—</p>
+          </div>
         </div>
         <button class="btn btn-ghost" id="btnSwitchProfile">Não é você? Cadastrar outro usuário neste aparelho</button>
       </div>
 
       <div id="loginNoProfile">
-        <button class="btn btn-primary" id="btnGoCadastro">Primeiro acesso — Cadastrar</button>
+        <button class="btn btn-primary btn-block" id="btnGoCadastro">Primeiro acesso — Cadastrar</button>
+      </div>
+
+      <div class="feature-grid">
+        <div class="feature"><strong>Offline em campo</strong>Funciona sem cobertura de dados, no próprio aparelho.</div>
+        <div class="feature"><strong>22 questões</strong>Situações reais de içamento, com correção automática.</div>
+        <div class="feature"><strong>Relatório em PDF</strong>O gestor exporta resultados por empresa e por data.</div>
       </div>
     </section>
 
     <!-- ============ CADASTRO ============ -->
     <section class="view" id="view-cadastro">
+      <div class="kicker">Primeiro acesso</div>
       <h2 class="view-title">Cadastro — Primeiro Acesso</h2>
       <p class="view-subtitle">Preenchido uma única vez neste aparelho. Os dados ficam salvos no celular mesmo sem internet.</p>
 
       <div class="field">
         <label for="inpNome">Nome completo</label>
-        <input type="text" id="inpNome" placeholder="Ex.: João da Silva" />
+        <input type="text" id="inpNome" placeholder="Ex.: João da Silva" autocomplete="name" />
       </div>
 
       <div class="field">
@@ -61,8 +75,8 @@
       <div class="field">
         <label>Tipo de acesso</label>
         <div class="radio-row">
-          <div class="radio-card selected" data-role="colaborador">Colaborador</div>
-          <div class="radio-card" data-role="gestor">Gestor (TRLL)</div>
+          <div class="radio-card selected" data-role="colaborador">Colaborador<small>Responde o quiz</small></div>
+          <div class="radio-card" data-role="gestor">Gestor (TRLL)<small>Acompanha e exporta</small></div>
         </div>
       </div>
 
@@ -71,107 +85,174 @@
         <input type="text" id="inpGestorCode" placeholder="Fornecido pela TRLL" />
       </div>
 
-      <button class="btn btn-primary" id="btnSalvarCadastro">Salvar e continuar</button>
+      <div class="form-error" id="cadastroError" style="display:none;"></div>
+
+      <div class="btn-row">
+        <button class="btn btn-primary" id="btnSalvarCadastro">Salvar e continuar</button>
+        <button class="btn btn-secondary btn-fixed" id="btnVoltarLogin">Voltar</button>
+      </div>
     </section>
 
     <!-- ============ MENU ============ -->
     <section class="view" id="view-menu">
+      <div class="kicker" id="menuRole">Colaborador</div>
       <h2 class="view-title" id="menuGreeting">Olá!</h2>
       <p class="view-subtitle">Escolha uma opção abaixo.</p>
 
-      <div class="menu-card" id="cardIniciarQuiz">
-        <h3>Iniciar Quiz de Segurança (NR 11)</h3>
-        <p>22 situações práticas de içamento e movimentação de carga. Leva de 8 a 12 minutos.</p>
+      <div class="stat-grid" style="margin-bottom:28px;">
+        <div class="stat-card"><div class="label">Pontos</div><div class="value" id="menuPoints">0</div></div>
+        <div class="stat-card"><div class="label">Melhor nota</div><div class="value" id="menuBest">—</div></div>
+        <div class="stat-card"><div class="label">Tentativas</div><div class="value" id="menuAttempts">0</div></div>
+        <div class="stat-card"><div class="label">Medalha</div><div class="value sm" id="menuMedal">—</div></div>
       </div>
 
-      <div class="menu-card" id="cardHistorico">
-        <h3>Meu histórico</h3>
-        <p>Veja suas tentativas anteriores registradas neste aparelho.</p>
+      <div class="card-grid">
+        <div class="menu-card" id="cardIniciarQuiz">
+          <h3>Iniciar Quiz de Segurança (NR 11)</h3>
+          <p>22 situações práticas de içamento e movimentação de carga. Leva de 8 a 12 minutos.</p>
+        </div>
+
+        <div class="menu-card" id="cardHistorico">
+          <h3>Meu histórico</h3>
+          <p>Veja suas tentativas anteriores registradas neste aparelho.</p>
+        </div>
+
+        <div class="menu-card" id="cardGestor" style="display:none;">
+          <h3>Painel do Gestor</h3>
+          <p>Acompanhe quem já respondeu, notas e exporte os resultados.</p>
+        </div>
       </div>
 
-      <div class="menu-card" id="cardGestor" style="display:none;">
-        <h3>Painel do Gestor</h3>
-        <p>Acompanhe quem já respondeu, notas e exporte os resultados.</p>
-      </div>
-
-      <button class="btn btn-ghost" id="btnLogout">Sair / Trocar usuário</button>
+      <button class="btn btn-ghost" id="btnLogout" style="margin-top:28px;">Sair / Trocar usuário</button>
     </section>
 
     <!-- ============ QUIZ ============ -->
     <section class="view" id="view-quiz">
+      <div class="quiz-meta">
+        <span class="counter" id="quizCounter">Questão 1 de 22</span>
+        <span class="metrics">
+          <span class="streak" id="quizStreak">0 em sequência</span>
+          <span><b id="quizPoints">0</b> pts</span>
+        </span>
+      </div>
       <div class="progress-bar"><div id="quizProgressBar" style="width:0%"></div></div>
+
       <span class="category-tag" id="quizCategoryTag">—</span>
+      <h2 class="question-title" id="quizQuestionTitle">—</h2>
+      <p class="scenario" id="quizScenario">—</p>
+      <p class="question-text" id="quizQuestionText">—</p>
 
-      <div class="question-card">
-        <div class="question-text" id="quizQuestionTitle">—</div>
-        <p class="scenario" id="quizScenario">—</p>
-        <p class="question-text" id="quizQuestionText" style="font-weight:600;font-size:14px;">—</p>
+      <div id="quizOptionsContainer"><!-- opções injetadas via JS --></div>
 
-        <div id="quizOptionsContainer"><!-- opções injetadas via JS --></div>
-
-        <div id="quizNumericContainer" style="display:none;">
-          <div class="field">
-            <label for="inpNumericAnswer">Sua resposta</label>
+      <div id="quizNumericContainer" style="display:none;">
+        <div class="field">
+          <label for="inpNumericAnswer">Sua resposta</label>
+          <div class="numeric-row">
             <input type="number" id="inpNumericAnswer" step="any" placeholder="Digite o valor" />
+            <span class="unit" id="quizNumericUnit"></span>
           </div>
         </div>
-
-        <div class="feedback-box" id="quizFeedback"></div>
       </div>
 
-      <button class="btn btn-primary" id="btnQuizConfirm">Confirmar resposta</button>
-      <button class="btn btn-secondary" id="btnQuizNext" style="display:none;">Próxima pergunta</button>
+      <div class="feedback-box" id="quizFeedback"></div>
+
+      <div class="btn-row">
+        <button class="btn btn-primary" id="btnQuizConfirm">Confirmar resposta</button>
+        <button class="btn btn-primary" id="btnQuizNext" style="display:none;">Próxima pergunta</button>
+        <button class="btn btn-secondary btn-fixed" id="btnQuizAbort">Sair do quiz</button>
+      </div>
     </section>
 
     <!-- ============ RESULTADO ============ -->
     <section class="view" id="view-resultado">
-      <h2 class="view-title">Resultado</h2>
-      <div class="score-circle" id="scoreCircle">
-        <span class="num" id="scoreNum">0/0</span>
-        <span class="den" id="scoreLabel">acertos</span>
-      </div>
-      <p class="view-subtitle" id="resultMessage" style="text-align:center;">—</p>
+      <div class="kicker">Resultado</div>
 
+      <div class="result-head">
+        <div class="score-ring" id="scoreCircle">
+          <div>
+            <span class="num" id="scoreNum">0/0</span>
+            <span class="den" id="scoreLabel">acertos</span>
+          </div>
+        </div>
+        <div class="result-summary">
+          <h2 class="medal" id="resultMedal">—</h2>
+          <p id="resultMessage">—</p>
+          <div class="mini-stats">
+            <div><div class="label">Pontos</div><div class="value" id="resultPoints">+0</div></div>
+            <div><div class="label">Maior sequência</div><div class="value" id="resultStreak">0</div></div>
+            <div><div class="label">A revisar</div><div class="value" id="resultWrong">0</div></div>
+          </div>
+        </div>
+      </div>
+
+      <div id="reviewWrapper" style="display:none;">
+        <h3 class="section-title">Revisão das questões erradas</h3>
+        <div class="review-list" id="reviewList"></div>
+      </div>
+
+      <h3 class="section-title">Todas as questões</h3>
       <div class="result-list" id="resultList"></div>
 
-      <button class="btn btn-primary" id="btnVoltarMenuFromResult">Voltar ao menu</button>
+      <div class="btn-row">
+        <button class="btn btn-primary btn-fixed" id="btnVoltarMenuFromResult">Voltar ao menu</button>
+        <button class="btn btn-secondary btn-fixed" id="btnRefazerQuiz">Refazer o quiz</button>
+      </div>
     </section>
 
     <!-- ============ HISTÓRICO ============ -->
     <section class="view" id="view-historico">
+      <div class="kicker">Minhas tentativas</div>
       <h2 class="view-title">Meu histórico</h2>
-      <div class="result-list" id="historicoList"></div>
-      <button class="btn btn-ghost" id="btnVoltarMenuFromHistorico">&larr; Voltar</button>
+      <div class="history-chart" id="historicoChart" style="display:none;"></div>
+      <div class="history-list" id="historicoList"></div>
+      <button class="btn btn-secondary btn-fixed" id="btnVoltarMenuFromHistorico" style="margin-top:26px;align-self:flex-start;">&larr; Voltar</button>
     </section>
 
     <!-- ============ PAINEL GESTOR ============ -->
     <section class="view" id="view-gestor">
+      <div class="kicker">TRLL Engenharia</div>
       <h2 class="view-title">Painel do Gestor</h2>
       <p class="view-subtitle">Colaboradores agrupados por empresa. Se alguém refizer o quiz, a nota exibida é sempre a da tentativa mais recente.</p>
 
-      <div class="sync-banner" id="syncBanner" style="display:none;"></div>
+      <div class="sync-banner" id="syncBanner"></div>
 
-      <div class="field">
-        <label for="gestorFilterEmpresa">Empresa</label>
-        <select id="gestorFilterEmpresa"></select>
+      <div class="filter-grid">
+        <div class="field">
+          <label for="gestorFilterEmpresa">Empresa</label>
+          <select id="gestorFilterEmpresa"></select>
+        </div>
+        <div class="field">
+          <label for="gestorFilterData">Data</label>
+          <input type="date" id="gestorFilterData" />
+          <div class="hint">Deixe em branco para ver/exportar todas as datas</div>
+        </div>
+        <button class="btn btn-secondary" id="btnClearFilters">Limpar filtro de data</button>
       </div>
-
-      <div class="field">
-        <label for="gestorFilterData">Data (deixe em branco para ver/exportar todas as datas)</label>
-        <input type="date" id="gestorFilterData" />
-      </div>
-
-      <button class="btn btn-ghost" id="btnClearFilters" style="margin-top:-10px;">Limpar filtro de data</button>
 
       <div class="stat-grid">
-        <div class="stat-card"><div class="value" id="statTotal">0</div><div class="label">Colaboradores (filtro atual)</div></div>
-        <div class="stat-card"><div class="value" id="statMedia">0%</div><div class="label">Média geral</div></div>
+        <div class="stat-card"><div class="label">Colaboradores (filtro atual)</div><div class="value" id="statTotal">0</div></div>
+        <div class="stat-card"><div class="label">Média geral</div><div class="value" id="statMedia">0%</div></div>
+        <div class="stat-card"><div class="label">Aprovados (&ge;70%)</div><div class="value ok" id="statAprovados">0</div></div>
+        <div class="stat-card"><div class="label">Abaixo do mínimo</div><div class="value bad" id="statReprovados">0</div></div>
+      </div>
+
+      <div class="chart-grid">
+        <div class="chart-card">
+          <h3>Média por empresa</h3>
+          <div class="chart-rows" id="chartEmpresas"></div>
+        </div>
+        <div class="chart-card">
+          <h3>Acertos por bloco temático</h3>
+          <div class="chart-rows" id="chartBlocos"></div>
+        </div>
       </div>
 
       <div id="gestorGroupsContainer"><!-- seções por empresa injetadas via JS --></div>
 
-      <button class="btn btn-secondary" id="btnExportPDF">Exportar resultados (PDF)</button>
-      <button class="btn btn-ghost" id="btnVoltarMenuFromGestor">&larr; Voltar</button>
+      <div class="btn-row">
+        <button class="btn btn-primary btn-fixed" id="btnExportPDF">Exportar resultados (PDF)</button>
+        <button class="btn btn-secondary btn-fixed" id="btnVoltarMenuFromGestor">&larr; Voltar</button>
+      </div>
     </section>
 
     <p class="footer-note">TRLL Engenharia LTDA &middot; Projeto Bootcamp Extensionista &middot; UNISAGRADO</p>

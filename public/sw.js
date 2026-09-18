@@ -3,7 +3,7 @@
  * (requisito da TRLL: canteiros e subestações sem cobertura de dados).
  */
 
-const CACHE_NAME = "trll-quiz-v2";
+const CACHE_NAME = "trll-quiz-v3";
 const APP_SHELL = [
   "./",
   "./index.html",
