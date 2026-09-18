@@ -22,8 +22,6 @@ Os três documentos-fonte usados neste projeto estão em `docs/`:
 | Exportação em PDF (por empresa e/ou por data) | ✅ Funcional, 100% offline (jsPDF local) | `public/js/app.js`, `public/js/vendor/jspdf.umd.min.js` |
 | Fila de sincronização offline → Supabase | ✅ Implementada (precisa de credenciais reais) | `public/js/supabase-client.js` |
 | Schema Supabase (tabelas + RLS liberada via anon key) | ✅ Pronto para aplicar | `supabase/schema.sql` |
-| Módulo de visão computacional (pessoa em zona de risco sob carga suspensa) | ✅ Funcional localmente com YOLOv8 pré-treinado; ⚠️ não publicado na Vercel (ver nota abaixo) | `api/detect_epi.py` |
-| Detecção de uso de capacete (EPI) | ⚠️ Requer modelo customizado — ver nota abaixo | `api/detect_epi.py` |
 
 ## Conteúdo do quiz
 
@@ -56,13 +54,6 @@ Acesse `http://localhost:8000`. No primeiro acesso, cadastre-se como
 teste `TRLL-2026` (definido em `public/js/app.js`, função `handleCadastro`
 — trocar por autenticação real do Supabase Auth antes de produção).
 
-## Como conectar ao Supabase (opcional para rodar; necessário para agregar dados entre aparelhos)
-
-1. Crie um projeto em [supabase.com](https://supabase.com).
-2. Rode `supabase/schema.sql` no SQL Editor do projeto.
-3. Em **Project Settings → API**, copie a **Project URL** e a **anon public
-   key** e preencha `public/config.js` (`SUPABASE_URL` e `SUPABASE_ANON_KEY`).
-   Esse arquivo já é carregado em `index.html` antes de `js/supabase-client.js`.
 
 A anon key é uma chave pública por design — o acesso real é controlado pelas
 políticas de RLS em `supabase/schema.sql`, então `public/config.js` pode ser
@@ -135,11 +126,3 @@ Paleta azul institucional TRLL (placeholder até receber a paleta oficial e o
 logotipo, conforme combinado no contato), fonte Calibri, verde = acerto/
 liberação e vermelho = erro/bloqueio — mesma lógica semafórica usada nos
 laudos técnicos da empresa (`public/css/style.css`).
-
-## Próximos passos (não implementados ainda)
-
-- Autenticação real via Supabase Auth (hoje o login é local, sem senha).
-- Treinar modelo customizado de EPI para o módulo de imagem.
-- Aplicar a paleta/logo oficiais da TRLL quando recebidos.
-- Testar com uma turma real de treinamento NR-11 (piloto combinado com o
-  Eng. Tadeu Teodoro) e ajustar o banco de questões conforme feedback.
