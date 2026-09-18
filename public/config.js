@@ -9,6 +9,6 @@
  * (localStorage), o que já atende ao uso offline em campo.
  */
 window.TRLL_CONFIG = {
-  SUPABASE_URL: "",
-  SUPABASE_ANON_KEY: "",
+  SUPABASE_URL: "https://thizwindcwzjaxdtkalk.supabase.co",
+  SUPABASE_ANON_KEY: "sb_publishable_rBvfHmTOfnF3D-przPZy2Q_lI62dFG1",
 };
