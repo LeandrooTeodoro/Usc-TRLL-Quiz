@@ -26,8 +26,6 @@ O material de apoio para a apresentação do projeto está em `apresentacao/`:
 | Sincronização offline → Supabase | ✅ Configurada e testada em produção | `public/js/supabase-client.js`, `public/config.js` |
 | Schema Supabase (tabelas + RLS liberada via anon key) | ✅ Aplicado no projeto Supabase em uso | `supabase/schema.sql` |
 | Deploy em produção (Vercel, deploy automático a cada push em `main`) | ✅ No ar (só o quiz — ver nota sobre o módulo de visão abaixo) | `vercel.json` |
-| Módulo de visão computacional (pessoa em zona de risco sob carga suspensa) | ✅ Funcional localmente com YOLOv8 pré-treinado; ⚠️ não publicado na Vercel (ver nota abaixo) | `api/detect_epi.py` |
-| Detecção de uso de capacete (EPI) | ⚠️ Requer modelo customizado — ver nota abaixo | `api/detect_epi.py` |
 
 ## Conteúdo do quiz
 
