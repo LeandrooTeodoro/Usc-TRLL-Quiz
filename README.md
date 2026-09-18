@@ -12,6 +12,9 @@ Os três documentos-fonte usados neste projeto estão em `docs/`:
 `roteiro_contato_instituicao_TRLL_preenchido.pdf` (levantamento de demanda) e
 `Facul_preenchido.pdf` (Entrega 1 — proposta formal apresentada à disciplina).
 
+O material de apoio para a apresentação do projeto está em `apresentacao/`:
+`Roteiro_Slides_Quiz_TRLL.pdf` e `Roteiro_Fala_Quiz_TRLL.pdf`.
+
 ## O que já está implementado
 
 | Módulo | Status | Onde |
@@ -20,8 +23,11 @@ Os três documentos-fonte usados neste projeto estão em `docs/`:
 | Cadastro/login local (colaborador e gestor) | ✅ Funcional | `public/js/app.js` |
 | Painel do gestor (agrupado por empresa, filtro por data) | ✅ Funcional | `public/js/app.js` |
 | Exportação em PDF (por empresa e/ou por data) | ✅ Funcional, 100% offline (jsPDF local) | `public/js/app.js`, `public/js/vendor/jspdf.umd.min.js` |
-| Fila de sincronização offline → Supabase | ✅ Implementada (precisa de credenciais reais) | `public/js/supabase-client.js` |
-| Schema Supabase (tabelas + RLS liberada via anon key) | ✅ Pronto para aplicar | `supabase/schema.sql` |
+| Sincronização offline → Supabase | ✅ Configurada e testada em produção | `public/js/supabase-client.js`, `public/config.js` |
+| Schema Supabase (tabelas + RLS liberada via anon key) | ✅ Aplicado no projeto Supabase em uso | `supabase/schema.sql` |
+| Deploy em produção (Vercel, deploy automático a cada push em `main`) | ✅ No ar (só o quiz — ver nota sobre o módulo de visão abaixo) | `vercel.json` |
+| Módulo de visão computacional (pessoa em zona de risco sob carga suspensa) | ✅ Funcional localmente com YOLOv8 pré-treinado; ⚠️ não publicado na Vercel (ver nota abaixo) | `api/detect_epi.py` |
+| Detecção de uso de capacete (EPI) | ⚠️ Requer modelo customizado — ver nota abaixo | `api/detect_epi.py` |
 
 ## Conteúdo do quiz
 
@@ -54,6 +60,19 @@ Acesse `http://localhost:8000`. No primeiro acesso, cadastre-se como
 teste `TRLL-2026` (definido em `public/js/app.js`, função `handleCadastro`
 — trocar por autenticação real do Supabase Auth antes de produção).
 
+## Como conectar ao Supabase (opcional para rodar; necessário para agregar dados entre aparelhos)
+
+Este repositório já está configurado com um projeto Supabase real
+(`public/config.js`, versionado — ver nota sobre a anon key abaixo), então
+rodando localmente ou publicado na Vercel, a sincronização entre aparelhos já
+funciona. O passo a passo abaixo serve para quem for apontar o projeto para
+um Supabase próprio (ex.: outra instância/ambiente):
+
+1. Crie um projeto em [supabase.com](https://supabase.com).
+2. Rode `supabase/schema.sql` no SQL Editor do projeto.
+3. Em **Project Settings → API**, copie a **Project URL** e a **anon public
+   key** e preencha `public/config.js` (`SUPABASE_URL` e `SUPABASE_ANON_KEY`).
+   Esse arquivo já é carregado em `index.html` antes de `js/supabase-client.js`.
 
 A anon key é uma chave pública por design — o acesso real é controlado pelas
 políticas de RLS em `supabase/schema.sql`, então `public/config.js` pode ser
@@ -71,6 +90,17 @@ liberam leitura/escrita para qualquer requisição com a anon key — aceitável
 para este uso interno (treinamento NR-11, sem dados sensíveis), mas deve
 evoluir para Supabase Auth real antes de qualquer uso com dados mais
 sensíveis.
+
+## Deploy (Vercel)
+
+O quiz está publicado na Vercel, importado diretamente do repositório GitHub
+(`LeandrooTeodoro/Usc-TRLL-Quiz`, branch `main`). `vercel.json` publica
+`public/` como site estático — **qualquer `git push` para `main` gera um
+redeploy automático**, sem precisar repetir a configuração pelo painel.
+
+`api/detect_epi.py` (módulo de visão) não faz parte desse deploy: ver
+"Módulo de processamento de imagens" abaixo para o motivo (limite de tamanho
+de função serverless) e as alternativas.
 
 ## Painel do gestor e relatório em PDF
 
@@ -126,3 +156,14 @@ Paleta azul institucional TRLL (placeholder até receber a paleta oficial e o
 logotipo, conforme combinado no contato), fonte Calibri, verde = acerto/
 liberação e vermelho = erro/bloqueio — mesma lógica semafórica usada nos
 laudos técnicos da empresa (`public/css/style.css`).
+
+## Próximos passos (não implementados ainda)
+
+- Autenticação real via Supabase Auth (hoje o login é local, sem senha).
+- Treinar modelo customizado de EPI para o módulo de imagem.
+- Aplicar a paleta/logo oficiais da TRLL quando recebidos.
+- Testar com uma turma real de treinamento NR-11 (piloto combinado com o
+  Eng. Tadeu Teodoro) e ajustar o banco de questões conforme feedback.
+- Publicar `api/detect_epi.py` num host que aceite o peso do `ultralytics`
+  (ou trocar por um runtime mais leve) — ver "Módulo de processamento de
+  imagens" acima.
